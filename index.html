@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Website.com</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" integrity="sha512-z3gLpd7yknf1YoNbCzqRKc4qyor8gaKU1qmn+CShxbuBusANI9QpRohGBreCFkKxLhei6S9CQXFEbbKuqLg0DA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" integrity="sha512-z3gLpd7yknf1YoNbCzqRKc4qyor8gaKU1qmn+CShxbuBusANI9QpRohGBreCFkKxLhei6S9CQXFEbbKuqLg0DA==" crossorigin="anonymous" />
+<link href="css/style.css" rel="stylesheet" />
+</head>
+<body id="profile">
+
+
+  <nav class="navbar navbar-expand-md navbar-dark bg-dark mb-4">
+    <div class="container-fluid">
+      <a class="navbar-brand" href="./">Website.com</a>
+
+      <div class="col-md-3 text-end" id="topbar-signup" style="display: none">
+        <a type="button" class="btn btn-outline-primary me-2" href="./login.html">Login</a>
+        <a type="button" class="btn btn-primary" href="./signup.html">Sign-up</a>
+      </div>
+
+      <div class="dropdown text-end" id="topbar-user" style="display: none">
+          <a href="#" class="d-block link-dark text-decoration-none dropdown-toggle" id="dropdownUser1" data-bs-toggle="dropdown" aria-expanded="false">
+            <img src="https://avatars.dicebear.com/api/adventurer-neutral/mail%40ashallendesign.co.uk.svg" alt="mdo" width="32" height="32" class="rounded-circle">
+            <!-- https://eu.ui-avatars.com/api/?name=John+Doe&size=25 -->
+          </a>
+          <ul class="dropdown-menu text-small dropdown-menu-end" aria-labelledby="dropdownUser1" style="">
+            <li><a class="dropdown-item" href="./">My profile page</a></li>
+            <li><a class="dropdown-item disabled" href="./">More...</a></li>
+            <li><hr class="dropdown-divider"></li>
+            <li><a class="dropdown-item" href="./example.html">Do something</a></li>
+            <li><hr class="dropdown-divider"></li>
+            <li><a class="dropdown-item signout-button" href="#">Sign out</a></li>
+          </ul>
+      </div>
+
+    </div>
+  </nav>
+
+  <main>
+
+    <div class="container-fluid">
+
+    <div class="row">
+
+      <div class="col">
+
+          <h1 id="profile-name" data-field='name' data-desc='Your name:'>
+            <svg class="" width="10em" height="1em" xmlns="http://www.w3.org/2000/svg" role="img" preserveAspectRatio="xMidYMid slice" focusable="false">
+              <rect width="100%" height="100%" fill="#ddd"></rect>
+            </svg>
+          </h1>
+
+        </div>
+    </div>    
+  </div>
+</main>
+
+<script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
+<script type="module" src="js/main.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"></script>
+
+</body>
+</html>
