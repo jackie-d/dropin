@@ -38,7 +38,7 @@ describe('initLayoutOnAuth', () => {
 });
 
 describe('showNotificationToast', () => {
-	const payload = { data: { body: 'Hello', fromId: 'abc', action: 'sending' } };
+	const payload = { data: { title: 'News', body: 'Hello', url: '/news' } };
 
 	it('shows a toast with the message', () => {
 		showNotificationToast(payload);

@@ -1,32 +1,32 @@
-// Helpers for push notifications, shared by the foreground handler in main.js.
-// Keep buildChatUrl in sync with firebase-messaging-sw.js (service workers can't import ES modules here).
+// Helpers for push notifications, used by the foreground handler in main.js.
+// Messages are expected as data messages: { data: { title, body, url } }, all optional but body.
+// Keep getSafeUrl in sync with firebase-messaging-sw.js (service workers can't import ES modules here).
 
-export const NOTIFICATION_TITLE = 'You got a new message';
+export const DEFAULT_TITLE = 'New notification';
 
-export function buildChatUrl(origin, data) {
-	const paramName = data.action == 'sending' ? 'from' : 'action';
-	return origin + '/chat.html?' + paramName + '=' + encodeURIComponent(data.fromId);
-}
-
-// True when the user is already looking at the chat the message belongs to
-export function isChatOpen(location, data) {
-	if ( location.pathname != '/chat.html' ) {
-		return false;
+// Resolves `url` against `origin`, accepting only http(s) links (no javascript: and similar)
+export function getSafeUrl(url, origin) {
+	if ( !url ) {
+		return null;
 	}
-	const params = new URLSearchParams(location.search);
-	return params.get('from') == data.fromId || params.get('action') == data.fromId;
+	try {
+		const parsed = new URL(url, origin);
+		return ['http:', 'https:'].includes(parsed.protocol) ? parsed.href : null;
+	} catch (error) {
+		return null;
+	}
 }
 
 export const toastTemplate = `<div class="toast-container position-fixed bottom-0 end-0 p-3" id="notification-toast">
   <div class="toast" role="alert" aria-live="assertive" aria-atomic="true">
     <div class="toast-header">
-      <strong class="me-auto toast-title">Website</strong>
+      <strong class="me-auto toast-title"></strong>
       <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
     </div>
     <div class="toast-body">
       <span></span>
-      <div class="mt-2 pt-2 border-top">
-        <a class="btn btn-primary btn-sm toast-link" href="#">Read now</a>
+      <div class="mt-2 pt-2 border-top toast-actions">
+        <a class="btn btn-primary btn-sm toast-link" href="#">Open</a>
       </div>
     </div>
   </div>
@@ -34,9 +34,16 @@ export const toastTemplate = `<div class="toast-container position-fixed bottom-
 
 // Builds the toast element for a message payload. Text is set with .text() so it can't inject HTML.
 export function buildToast($, payload, origin) {
+	const data = payload.data;
 	const $toast = $(toastTemplate);
-	$toast.find('.toast-title').text(NOTIFICATION_TITLE);
-	$toast.find('.toast-body span').text(payload.data.body);
-	$toast.find('.toast-link').attr('href', buildChatUrl(origin, payload.data));
+	$toast.find('.toast-title').text(data.title || DEFAULT_TITLE);
+	$toast.find('.toast-body span').text(data.body || '');
+
+	const url = getSafeUrl(data.url, origin);
+	if ( url ) {
+		$toast.find('.toast-link').attr('href', url);
+	} else {
+		$toast.find('.toast-actions').remove();
+	}
 	return $toast;
 }

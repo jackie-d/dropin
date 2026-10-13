@@ -14,9 +14,9 @@ describe('profile page', () => {
 		expect($('#profile-name').text()).toBe('Jane Doe');
 	});
 
-	it('falls back to the email for users without a display name', () => {
+	it('does not show the email of users without a display name', () => {
 		profilePage.init({}, { displayName: null, email: 'jane@example.com' });
-		expect($('#profile-name').text()).toBe('jane@example.com');
+		expect($('#profile-name').text()).toBe('');
 	});
 
 	it('redirects signed-out visitors to the login page', () => {

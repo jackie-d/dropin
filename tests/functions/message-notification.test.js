@@ -1,5 +1,5 @@
 import { describe, it, expect, vi } from 'vitest';
-import { truncate, buildPayload, sendChatNotification, PREVIEW_LENGTH } from '../../functions/lib/chat-notification.js';
+import { truncate, buildPayload, sendMessageNotification, PREVIEW_LENGTH, NOTIFICATION_TITLE } from '../../functions/lib/message-notification.js';
 
 function fakeDb(users) {
 	return {
@@ -36,29 +36,29 @@ describe('buildPayload', () => {
 	it('sends a data message identifying the sender', () => {
 		expect(buildPayload('token-1', { message: 'Hi' }, 'alice')).toEqual({
 			token: 'token-1',
-			data: { body: 'Hi', fromId: 'alice' }
+			data: { title: NOTIFICATION_TITLE, body: 'Hi', fromId: 'alice' }
 		});
 	});
 });
 
-describe('sendChatNotification', () => {
+describe('sendMessageNotification', () => {
 	it('notifies the recipient with the sender as fromId', async () => {
 		const messaging = { send: vi.fn(async () => 'msg-id') };
 		const db = fakeDb({ bob: { fcmToken: 'bob-token' } });
 		vi.spyOn(console, 'log').mockImplementation(() => {});
 
-		const result = await sendChatNotification({ db, messaging }, params, { message: 'Hello Bob!' });
+		const result = await sendMessageNotification({ db, messaging }, params, { message: 'Hello Bob!' });
 
 		expect(result).toEqual({ success: true, messageId: 'msg-id' });
 		expect(messaging.send).toHaveBeenCalledWith({
 			token: 'bob-token',
-			data: { body: 'Hello Bob!', fromId: 'alice' }
+			data: { title: NOTIFICATION_TITLE, body: 'Hello Bob!', fromId: 'alice' }
 		});
 	});
 
 	it('skips recipients without an FCM token', async () => {
 		const messaging = { send: vi.fn() };
-		const result = await sendChatNotification({ db: fakeDb({ bob: {} }), messaging }, params, { message: 'Hi' });
+		const result = await sendMessageNotification({ db: fakeDb({ bob: {} }), messaging }, params, { message: 'Hi' });
 
 		expect(result).toEqual({ skipped: 'no-token' });
 		expect(messaging.send).not.toHaveBeenCalled();
@@ -66,7 +66,7 @@ describe('sendChatNotification', () => {
 
 	it('skips events without message data', async () => {
 		const db = fakeDb({});
-		const result = await sendChatNotification({ db, messaging: { send: vi.fn() } }, params, undefined);
+		const result = await sendMessageNotification({ db, messaging: { send: vi.fn() } }, params, undefined);
 
 		expect(result).toEqual({ skipped: 'no-message' });
 		expect(db.collection).not.toHaveBeenCalled();
@@ -74,7 +74,7 @@ describe('sendChatNotification', () => {
 
 	it('fails when the recipient does not exist', async () => {
 		await expect(
-			sendChatNotification({ db: fakeDb({}), messaging: { send: vi.fn() } }, params, { message: 'Hi' })
+			sendMessageNotification({ db: fakeDb({}), messaging: { send: vi.fn() } }, params, { message: 'Hi' })
 		).rejects.toThrow('user bob does not exist');
 	});
 
@@ -82,7 +82,7 @@ describe('sendChatNotification', () => {
 		const messaging = { send: vi.fn(async () => { throw { code: 'messaging/registration-token-not-registered' }; }) };
 		const db = fakeDb({ bob: { fcmToken: 'stale' } });
 
-		const result = await sendChatNotification({ db, messaging }, params, { message: 'Hi' });
+		const result = await sendMessageNotification({ db, messaging }, params, { message: 'Hi' });
 		expect(result).toEqual({ error: 'messaging/registration-token-not-registered' });
 	});
 });

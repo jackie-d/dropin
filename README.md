@@ -19,9 +19,13 @@ Design made in Bootstrap v. 5.
 - Set your data on the pages home, profile (`index.html`), login, signup
 - Serve the folder with any static server, e.g. `npm run serve`
 
+### Push notifications
+
+Send FCM data messages shaped like `{ data: { title, body, url } }`: a toast is shown while the site is open, a system notification otherwise (by `firebase-messaging-sw.js`). `url` is optional and opened when the notification is clicked; only http(s) links are accepted.
+
 ### Cloud Functions
 
-`functions/` contains `onChatMessage`, which sends a push notification to the recipient when a new message is created under `chat/{userId}/chat/{recipientId}/messages/{message}`. The recipient's FCM token is read from `users/{recipientId}.fcmToken`.
+`functions/` contains `onUserMessage`: when a user writes a new message to another user under `messages/{userId}/recipients/{recipientId}/messages/{messageId}` (with the text in the `message` field), it sends a push notification to the recipient. The recipient's FCM token is read from `users/{recipientId}.fcmToken`. Set the page to open on click in `getMessageUrl` in `functions/lib/message-notification.js`.
 
 - `cd functions && npm install`
 - `npm run deploy` (requires the [Firebase CLI](https://firebase.google.com/docs/cli))
