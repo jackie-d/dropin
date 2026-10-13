@@ -1,4 +1,5 @@
 import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.5.0/firebase-auth.js";
+import push from "./push.js";
 
 const module = {
 
@@ -22,8 +23,10 @@ const module = {
 		});
 
 		// handle signout button
-		$('.signout-button').on('click', (event) => {
+		$('.signout-button').on('click', async (event) => {
 			event.preventDefault();
+			// stop push notifications for this browser while still signed in
+			await push.disable();
 			return signOut(auth).then(() => {
 				this.redirect('./');
 			}).catch((error) => {

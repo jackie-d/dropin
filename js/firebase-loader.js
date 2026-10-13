@@ -16,6 +16,10 @@ const firebaseConfig = {
   measurementId: ""
 };
 
+// Web Push certificate key, needed for push notifications:
+// Firebase console > Project settings > Cloud Messaging > Web Push certificates
+export const vapidKey = "";
+
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
 const analytics = getAnalytics(app);

@@ -1,6 +1,7 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { onAuthStateChanged, signOut, getAuth } from '../stubs/firebase-auth.js';
 import authService from '../../js/services/auth.js';
+import push from '../../js/services/push.js';
 
 const app = { name: 'test-app' };
 
@@ -45,6 +46,18 @@ describe('auth service', () => {
 		$('.signout-button').trigger('click');
 		await vi.waitFor(() => expect(redirect).toHaveBeenCalledWith('./'));
 		expect(signOut).toHaveBeenCalledTimes(1);
+	});
+
+	it('stops push notifications before signing out', async () => {
+		const calls = [];
+		vi.spyOn(push, 'disable').mockImplementation(async () => { calls.push('disable'); });
+		signOut.mockImplementationOnce(async () => { calls.push('signOut'); });
+		emitAuthState({ uid: '1' });
+		await authService.init(app);
+
+		$('.signout-button').trigger('click');
+		await vi.waitFor(() => expect(redirect).toHaveBeenCalled());
+		expect(calls).toEqual(['disable', 'signOut']);
 	});
 
 	it('stays on the page if signing out fails', async () => {
