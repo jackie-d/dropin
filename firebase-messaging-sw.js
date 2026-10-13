@@ -15,27 +15,39 @@ firebase.initializeApp({
 // messages.
 const messaging = firebase.messaging();
 
+// keep in sync with getSafeUrl in js/lib/notifications.js
+function getSafeUrl(url) {
+  if ( !url ) {
+    return null;
+  }
+  try {
+    const parsed = new URL(url, self.location.origin);
+    return ['http:', 'https:'].includes(parsed.protocol) ? parsed.href : null;
+  } catch (error) {
+    return null;
+  }
+}
+
+// Expects data messages: { data: { title, body, url } }
 messaging.onBackgroundMessage((payload) => {
   console.log(
     '[firebase-messaging-sw.js] Received background message ',
     payload
   );
-  // Customize notification here
-  // keep in sync with buildChatUrl in js/lib/notifications.js
-  const paramName = payload.data.action == 'sending' ? 'from' : 'action';
-  const destinationUrl = self.location.origin + '/chat.html?' + paramName + '=' + encodeURIComponent(payload.data.fromId);
-  const notificationTitle = 'You got a new message';
+  const data = payload.data || {};
+  const url = getSafeUrl(data.url);
+
   const notificationOptions = {
-    body: payload.data.body,
-    data: { url: destinationUrl }, //the url which we gonna use later
-    actions: [{action: "open_url", title: "Read now"}]
+    body: data.body || '',
+    data: { url: url },
+    actions: url ? [{action: "open_url", title: "Open"}] : []
   };
 
-  self.registration.showNotification(notificationTitle, notificationOptions);
+  self.registration.showNotification(data.title || 'New notification', notificationOptions);
 });
 
 
-// Open the chat both when the notification itself and when the "Read now" action is clicked
+// Open the link both when the notification itself and when the "Open" action is clicked
 self.addEventListener('notificationclick', (event) => {
   event.notification.close();
 

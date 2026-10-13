@@ -17,8 +17,7 @@ const module = {
 	},
 
 	loadData: function() {
-		// users signed up by email have no display name
-		$('#profile-name').text(this.user.displayName || this.user.email);
+		$('#profile-name').text(this.user.displayName || '');
 	},
 
 	redirect: function(url) {

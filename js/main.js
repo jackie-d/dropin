@@ -1,7 +1,7 @@
 import firebase from './firebase-loader.js';
 
 import { getMessaging, onMessage, isSupported } from "https://www.gstatic.com/firebasejs/10.5.0/firebase-messaging.js";
-import { buildToast, isChatOpen } from './lib/notifications.js';
+import { buildToast } from './lib/notifications.js';
 
 
 let user = null;
@@ -77,7 +77,7 @@ async function initNotification() {
 }
 
 export function showNotificationToast(payload) {
-	if ( !payload.data || isChatOpen(location, payload.data) ) {
+	if ( !payload.data ) {
 		return;
 	}
 
