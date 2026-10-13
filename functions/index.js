@@ -1,64 +1,20 @@
-let admin = require('firebase-admin');
-
-const {
-  onDocumentWritten
-} = require ( "firebase-functions/v2/firestore" );
+const admin = require('firebase-admin');
+const { onDocumentCreated } = require("firebase-functions/v2/firestore");
+const { sendChatNotification } = require('./lib/chat-notification');
 
 if ( admin.apps.length === 0 ) {
 	admin.initializeApp();
 }
 
-
-exports.onChatMessage = onDocumentWritten({
+// Notifies the recipient when userId sends them a new chat message
+exports.onChatMessage = onDocumentCreated({
 		document: "chat/{userId}/chat/{recipientId}/messages/{message}",
 		maxInstances: 2
-	}, async (event) => {
+	}, (event) => {
 
-	console.log('message');
-		
-	const userId = event.params.userId;
-	const recipientId = event.params.recipientId;
-
-	const message = event.data.after.data();
-	let text = message.message;
-
-	const textLength = 20;
-	if ( text.length > textLength ) {
-		text = text.substring(0, textLength) + '...';
- 	}
-
-	//
-    let db = admin.firestore();
-    const userSnap = await db.collection("users").doc(recipientId).get();
-
-    if ( !userSnap.exists ) {
-    	throw new Error(`onChatMessage error: user ${recipientId} does not exist`);
-    }	
-
-	const user = userSnap.data();
-	const fcmToken = user.fcmToken;
-
-	if ( !fcmToken ) {
-		console.log(`onChatMessage info: No FCM token for user ${recipientId}`);
-		return;
-	}
-
-   	//
-	const payload = {
-		token: fcmToken,
-		data: {
-			body: text,
-			fromId: recipientId
-		}
-	};
-
-	admin.messaging().send(payload).then((response) => {
-		// Response is a message ID string.
-		console.log('Successfully sent message:', response);
-		return {success: true};
-	}).catch((error) => {
-		console.log('onChatMessage error', error);
-		return {error: error.code};
-	});
-
+	return sendChatNotification(
+		{ db: admin.firestore(), messaging: admin.messaging() },
+		event.params,
+		event.data && event.data.data()
+	);
 });
