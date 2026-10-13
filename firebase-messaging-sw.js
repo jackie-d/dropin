@@ -21,8 +21,9 @@ messaging.onBackgroundMessage((payload) => {
     payload
   );
   // Customize notification here
+  // keep in sync with buildChatUrl in js/lib/notifications.js
   const paramName = payload.data.action == 'sending' ? 'from' : 'action';
-  const destinationUrl = self.location.protocol + '//' + self.location.host + '/chat.html?' + paramName + '=' + payload.data.fromId
+  const destinationUrl = self.location.origin + '/chat.html?' + paramName + '=' + encodeURIComponent(payload.data.fromId);
   const notificationTitle = 'You got a new message';
   const notificationOptions = {
     body: payload.data.body,
@@ -34,12 +35,13 @@ messaging.onBackgroundMessage((payload) => {
 });
 
 
-self.addEventListener('notificationclick', function(event) {
+// Open the chat both when the notification itself and when the "Read now" action is clicked
+self.addEventListener('notificationclick', (event) => {
+  event.notification.close();
 
-  switch(event.action){
-    case 'open_url':
-    clients.openWindow(event.notification.data.url);
-    break;
+  const url = event.notification.data && event.notification.data.url;
+  if ( !url ) {
+    return;
   }
-}
-, false);
+  event.waitUntil(clients.openWindow(url));
+});

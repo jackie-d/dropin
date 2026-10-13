@@ -5,53 +5,37 @@ const module = {
 	firebase: null,
 
 	user: null,
-	
-	init: function(firebase) {
 
+	// Resolves with the signed-in user, or null, once Firebase has restored the session
+	init: function(firebase) {
 		this.firebase = firebase;
 
+		const auth = getAuth(firebase);
 
-		const auth = getAuth();
-
-		const that = this;
-
-		const promise = new Promise(function(resolve, reject) {
-
-			onAuthStateChanged(auth, (user) => {
-			  if (user) {
-			    // User is signed in, see docs for a list of available properties
-			    // https://firebase.google.com/docs/reference/js/auth.user
-			    const uid = user.uid;
-
-			    that.user = user;
-			    console.log(user);
-			    resolve(user);
-			    // ...
-			  } else {
-
-			  	that.user = null;
-			  	resolve(null);
-			    // User is signed out
-			    // ...
-			  }
+		const promise = new Promise((resolve) => {
+			const unsubscribe = onAuthStateChanged(auth, (user) => {
+				// only the initial state is needed: pages reload on login/logout
+				unsubscribe();
+				this.user = user || null;
+				resolve(this.user);
 			});
-
-
 		});
 
 		// handle signout button
-		$('.signout-button').click(() => {
-			signOut(auth).then(() => {
-			  location.href = './'
+		$('.signout-button').on('click', (event) => {
+			event.preventDefault();
+			return signOut(auth).then(() => {
+				this.redirect('./');
 			}).catch((error) => {
-			 	console.log(error);
+				console.log(error);
 			});
-		})
-
-		// ---
+		});
 
 		return promise;
+	},
 
+	redirect: function(url) {
+		location.href = url;
 	}
 
 };

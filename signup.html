@@ -43,32 +43,34 @@
 
 
 
-		        <form class="needs-validation" novalidate="">
+		        <form class="needs-validation" id="signup-form" novalidate="">
 
 		          <div class="row g-3">
 		           
 
 		            <div class="col-12">
-		              <label for="username" class="form-label">Email</label>
+		              <label for="email" class="form-label">Email</label>
 		              <div class="input-group has-validation">
 		                <input type="email" class="form-control" id="email" placeholder="you@example.com" required="">
 		              <div class="invalid-feedback">
-		                  Your username is required.
+		                  Your email is required.
 		                </div>
 		              </div>
 		            </div>
 
 		            <div class="col-12">
-		              <label for="email" class="form-label">Password</label>
-		              <input type="password" class="form-control" id="password" placeholder="">
+		              <label for="password" class="form-label">Password</label>
+		              <input type="password" class="form-control" id="password" placeholder="" required="">
 		              <div class="invalid-feedback">
-		                Please enter a valid email address for shipping updates.
+		                Your password is required.
 		              </div>
 		            </div>
 
 		          </div>
 
-		          <a class="w-100 btn btn-primary btn-lg mt-3" id="signupButton">Signup</a>
+		          <div class="alert alert-danger mt-3 mb-0 d-none" id="signup-error" role="alert"></div>
+
+		          <button type="submit" class="w-100 btn btn-primary btn-lg mt-3" id="signupButton">Signup</button>
 
 		        </form>
 
