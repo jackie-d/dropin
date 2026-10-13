@@ -21,6 +21,13 @@ Design made in Bootstrap v. 5.
 
 ### Push notifications
 
+Setup:
+
+- In the Firebase console, open Project settings > Cloud Messaging > Web Push certificates, generate a key pair and copy the key into `vapidKey` in `/js/firebase-loader.js`
+- Publish the rules in `firestore.rules` (Firestore > Rules), so users can save their token in their own `users/{uid}` document
+
+Signed-in users enable notifications with the "Enable notifications" button on the profile page: browsers only allow asking the permission after a user action. The token is then saved in `users/{uid}.fcmToken`, refreshed on each visit and removed on sign out. One token is kept per user: the last browser that enabled notifications receives them.
+
 Send FCM data messages shaped like `{ data: { title, body, url } }`: a toast is shown while the site is open, a system notification otherwise (by `firebase-messaging-sw.js`). `url` is optional and opened when the notification is clicked; only http(s) links are accepted.
 
 ### Cloud Functions
