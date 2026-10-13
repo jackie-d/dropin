@@ -1,6 +1,6 @@
-import firebase from './firebase-loader.js';
+import firebase, { vapidKey } from './firebase-loader.js';
 
-import { getMessaging, onMessage, isSupported } from "https://www.gstatic.com/firebasejs/10.5.0/firebase-messaging.js";
+import push from './services/push.js';
 import { buildToast } from './lib/notifications.js';
 
 
@@ -12,7 +12,7 @@ $(() => {init()});
 export async function init() {
 
 	user = await initAuth();
-	initNotification();
+	await initNotification();
 
 	const pageId = $('body').attr("id");
 	switch(pageId) {
@@ -66,14 +66,8 @@ export function initLayoutOnAuth(user) {
 
 let toastBootstrap;
 
-async function initNotification() {
-	// messaging is unavailable on http, in some browsers and in private windows
-	if ( !(await isSupported()) ) {
-		return;
-	}
-
-	const messaging = getMessaging(firebase);
-	onMessage(messaging, showNotificationToast);
+function initNotification() {
+	return push.init(firebase, user, { vapidKey, onForegroundMessage: showNotificationToast });
 }
 
 export function showNotificationToast(payload) {
