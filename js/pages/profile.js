@@ -1,26 +1,28 @@
-import { } from "https://www.gstatic.com/firebasejs/10.5.0/firebase-firestore.js";
-
-
 const module = {
 
 	firebase: null,
-    user: null,
-	
+	user: null,
+
 	init: function(firebase, user) {
-		console.log(firebase);
-
 		this.firebase = firebase;
-        this.user = user;
+		this.user = user;
 
-		const that = this;
+		// the profile page is only for signed-in users
+		if ( !user ) {
+			this.redirect('./login.html');
+			return;
+		}
 
-        this.loadData();
-
+		this.loadData();
 	},
 
-    loadData: async function() {
-        $('#profile-name').text(this.user.displayName);
-    }
+	loadData: function() {
+		$('#profile-name').text(this.user.displayName || '');
+	},
+
+	redirect: function(url) {
+		location.href = url;
+	}
 
 };
 
