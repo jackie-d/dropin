@@ -1,0 +1,18 @@
+{
+  "name": "dropin",
+  "version": "1.0.0",
+  "description": "Frontend dropin with Firebase: vanilla JS web-app starter with auth and push notifications",
+  "private": true,
+  "type": "module",
+  "license": "MIT",
+  "scripts": {
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "serve": "npx --yes http-server -c-1 ."
+  },
+  "devDependencies": {
+    "jquery": "^3.7.1",
+    "jsdom": "^26.1.0",
+    "vitest": "^3.2.4"
+  }
+}
